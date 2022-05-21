@@ -73,7 +73,7 @@ public class UserController {
 		try {
 			String key = readPemFile();
 			if (key == null) {
-				throw new IFMSException("Unable to read private Key file");
+				throw new IFMSException("Unable to read the private Key");
 			}
 			UserDetails userDetails = this.userService.getUserDetail(securityContext.userName());
 			String token = generateJWT(key, userDetails, this.config);
