@@ -1,0 +1,9 @@
+com\pwc\helidon\ifms\commons\MiscConstants.class
+com\pwc\helidon\ifms\service\UserService.class
+com\pwc\helidon\ifms\model\RoleDetails.class
+com\pwc\helidon\ifms\controller\UserController.class
+com\pwc\helidon\ifms\MainApplication.class
+com\pwc\helidon\ifms\commons\IFMSException.class
+com\pwc\helidon\ifms\MPJWTToken.class
+com\pwc\helidon\ifms\model\UserDetails.class
+com\pwc\helidon\ifms\repository\UserRepository.class

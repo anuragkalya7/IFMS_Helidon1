@@ -1,0 +1,22 @@
+server:
+    port: 8080
+javax:
+    sql:
+        DataSource:
+            ifmsDataSource:
+                dataSourceClassName: oracle.jdbc.pool.OracleDataSource
+                dataSource:
+                    url: jdbc:oracle:thin:@localhost:1521/XE
+                    user: c##ifms
+                    password: password
+
+security:
+    config:
+        require-encryption: false    
+    providers:
+        - http-basic-auth:
+             realm: "helidon"
+             users:
+             - login: "ANURAG.KALYA"
+               password: "Pass1234"         
+           
