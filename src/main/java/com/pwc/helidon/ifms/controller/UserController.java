@@ -1,4 +1,3 @@
-
 package com.pwc.helidon.ifms.controller;
 
 import java.io.BufferedReader;
@@ -8,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;
@@ -22,7 +20,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.pwc.helidon.ifms.MPJWTToken;
@@ -38,25 +43,50 @@ import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
 
 /**
+ * Endpoint Class for user related data
  * 
- * 
+ * @author Anurag Kalya
  */
 
 @Path("/user")
-@ApplicationScoped
 @OpenAPIDefinition(info = @Info(title = "User endpoint", version = "1.0"))
 public class UserController {
 	private static final JsonBuilderFactory JSON = Json.createBuilderFactory(Collections.emptyMap());
 
 	private final UserService userService;
 
+	static Logger log = LoggerFactory.getLogger(UserController.class);
+
+	@Inject
+	@RestClient
+	EmployeeRestClient employeeRestClient;
+
 	@Inject
 	Config config;
 
 	@Inject
-	public UserController(UserService userService, Config config) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.config = config;
+	}
+
+	@GET
+	@Operation(summary = "Rest Client Usage", description = "Call the API using Rest Client")
+	@APIResponse(responseCode = "500", description = "Internal Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+	@Path("/getData")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Authenticated
+	public Response getData(@Context io.helidon.security.SecurityContext securityContext) {
+		System.out.println("In API /user/getData");
+		log.info("In API /user/getData");
+		try {
+			Response userData = employeeRestClient.getDetails();
+			return userData;
+		} catch (Exception e) {
+			System.err.println("In API /user/getData: Internal Error");
+			log.error("In API /user/getData: Internal Error");
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(JSON.createObjectBuilder().add("code", 500).add("message", e.getMessage()).build()).build();
+		}
 	}
 
 	/**
@@ -65,10 +95,15 @@ public class UserController {
 	 * @return {@link JsonObject}
 	 */
 	@GET
+	@Operation(summary = "Returns JWT Token", description = "Create and Returns a JWT Token for API security")
+	@APIResponse(responseCode = "500", description = "Internal Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+	@APIResponse(responseCode = "200", description = "Returns Auth Token and Roles", content = @Content(mediaType = "application/json"))
 	@Path("/getToken")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Authenticated
 	public Response getAuthTokenDetails(@Context io.helidon.security.SecurityContext securityContext) {
+		System.out.println("In API /user/getToken");
+		log.info("In API /user/getToken - API Invoked");
 		Gson gson = new Gson();
 		try {
 			String key = readPemFile();
@@ -77,11 +112,15 @@ public class UserController {
 			}
 			UserDetails userDetails = this.userService.getUserDetail(securityContext.userName());
 			String token = generateJWT(key, userDetails, this.config);
-			
-			return Response.ok(JSON.createObjectBuilder()
-					.add("userRoles", gson.toJson(userDetails.getRoleList()))
+
+			System.out.println("Token: " + token.trim());
+			log.info("Token - " + token.trim());
+			return Response.ok(JSON.createObjectBuilder().add("userRoles", gson.toJson(userDetails.getRoleList()))
 					.add("token", token).build()).build();
+
 		} catch (IFMSException e) {
+			System.out.println("In API /user/getToken: Exception Occurred");
+			log.info("In API /user/getToken - Exception Occurred");
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(JSON.createObjectBuilder().add("code", 500).add("message", e.getMessage()).build()).build();
 		}
@@ -105,8 +144,6 @@ public class UserController {
 		token.addAdditionalClaims("userId", String.valueOf(userDetail.getUserId()));
 		token.addAdditionalClaims("userRole", userDetail.getUserRole());
 
-		//List<String> roleNameList = userDetail.getRoleList().stream().map(role -> role.getRoleName())
-		//		.collect(Collectors.toList());
 		token.setGroups(userDetail.getRoleList());
 
 		return provider.generateToken(new io.vertx.core.json.JsonObject().mergeIn(token.toJSONString()),

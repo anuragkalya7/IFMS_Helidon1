@@ -89,6 +89,10 @@
 			<version>2.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>io.helidon.microprofile.rest-client</groupId>
+			<artifactId>helidon-microprofile-rest-client</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
 			<scope>provided</scope>
@@ -117,6 +121,29 @@
 			<groupId>io.helidon.security.providers</groupId>
 			<artifactId>helidon-security-providers-http-auth</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile.openapi</groupId>
+			<artifactId>microprofile-openapi-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.helidon.microprofile.openapi</groupId>
+			<artifactId>helidon-microprofile-openapi</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.microprofile-ext.openapi-ext</groupId> <artifactId>openapi-ui</artifactId> 
+			<version>1.1.5</version> </dependency> -->
 	</dependencies>
 
 	<build>

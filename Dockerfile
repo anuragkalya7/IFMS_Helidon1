@@ -8,7 +8,7 @@ WORKDIR /helidon-jpa
 # Incremental docker builds will always resume after that, unless you update
 # the pom
 ADD pom.xml .
-RUN mvn package -Dmaven.test.skip -Declipselink.weave.skip
+RUN mvn package -Dmaven.test.skip
 
 # Do the Maven build!
 # Incremental docker builds will resume here when you change sources
@@ -17,7 +17,7 @@ RUN mvn package -DskipTests
 RUN echo "done!"
 
 # 2nd stage, build the runtime image
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
 WORKDIR /helidon-jpa
 
 # Copy the binary built in the 1st stage

@@ -1,11 +1,13 @@
 package com.pwc.helidon.ifms.service;
 
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.pwc.helidon.ifms.commons.IFMSException;
 import com.pwc.helidon.ifms.model.UserDetails;
 import com.pwc.helidon.ifms.repository.UserRepository;
 
+@Dependent
 public class UserService {
 
 	private final UserRepository userRepository;
