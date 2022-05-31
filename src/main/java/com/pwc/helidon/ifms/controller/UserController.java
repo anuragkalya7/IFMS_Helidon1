@@ -89,6 +89,16 @@ public class UserController {
 		}
 	}
 
+	@GET
+	@Path("/test")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testMethod() {
+		System.out.println("In API /user/test");
+		log.info("In API /user/test");
+		return Response.status(Status.OK)
+				.entity(JSON.createObjectBuilder().add("code", 200).add("message", "Test successfull").build()).build();
+	}
+
 	/**
 	 * Return Auth token and Role details.
 	 *
@@ -143,7 +153,6 @@ public class UserController {
 		token.addAdditionalClaims("userType", userDetail.getUserType());
 		token.addAdditionalClaims("userId", String.valueOf(userDetail.getUserId()));
 		token.addAdditionalClaims("userRole", userDetail.getUserRole());
-
 		token.setGroups(userDetail.getRoleList());
 
 		return provider.generateToken(new io.vertx.core.json.JsonObject().mergeIn(token.toJSONString()),
